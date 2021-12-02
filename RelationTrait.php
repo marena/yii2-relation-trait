@@ -150,9 +150,9 @@ trait RelationTrait
                                         }
                                         array_push($notIn, $content);
                                         array_push($compiledNotDeletedPK, $notIn);
-                                        $relModel->deleteAll($compiledNotDeletedPK);
+                                        $this->deleteRecords($relModel, $compiledNotDeletedPK);
                                         try {
-                                            $relModel->deleteAll($compiledNotDeletedPK);
+                                            $this->deleteRecords($relModel, $compiledNotDeletedPK);
                                         } catch (\yii\db\IntegrityException $exc) {
                                             $this->addError($name, \Yii::t('mtrelt', "Data can't be deleted because it's still used by another data."));
                                             $error = true;
@@ -162,7 +162,7 @@ trait RelationTrait
                                         $compiledNotDeletedPK = implode(',', $notDeletedPK);
                                         if (!empty($compiledNotDeletedPK)) {
                                             try {
-                                                $relModel->deleteAll($notDeletedFK . ' AND ' . $relPKAttr[0] . " NOT IN ($compiledNotDeletedPK)");
+                                                $this->deleteRecords($relModel, $notDeletedFK . ' AND ' . $relPKAttr[0] . " NOT IN ($compiledNotDeletedPK)");
                                             } catch (\yii\db\IntegrityException $exc) {
                                                 $this->addError($name, \Yii::t('mtrelt', "Data can't be deleted because it's still used by another data."));
                                                 $error = true;
@@ -209,7 +209,7 @@ trait RelationTrait
                                 $condition[] = "$k = '{$this->$v}'";
                             }
                             try {
-                                $relModel->deleteAll(implode(" AND ", $condition));
+                                $this->deleteRecords($relModel, implode(" AND ", $condition));
                             } catch (\yii\db\IntegrityException $exc) {
                                 $this->addError($relData[$relName]['name'], \Yii::t('mtrelt', "Data can't be deleted because it's still used by another data."));
                                 $error = true;
@@ -220,7 +220,7 @@ trait RelationTrait
                                     $condition[] = "$k = '{$this->$v}'";
                                 }
                                 try {
-                                    $relModel->deleteAll(implode(" AND ", $condition));
+                                    $this->deleteRecords($relModel, implode(" AND ", $condition));
                                 } catch (\yii\db\IntegrityException $exc) {
                                     $this->addError($relData[$relName]['name'], \Yii::t('mtrelt', "Data can't be deleted because it's still used by another data."));
                                     $error = true;
@@ -247,6 +247,18 @@ trait RelationTrait
         }
     }
 
+    private function deleteRecords($relModel, $conditions)
+    {
+        $deletedRows = 0;
+        $relModels = $relModel::find()->where($conditions)->all();
+        foreach ($relModels as $relModelDelete) {
+            if ($relModelDelete->delete()) {
+                $deletedRows++;
+            }
+        }
+        return $deletedRows;
+    }
+
     public function deleteWithRelated($allowedRelations)
     {
         /* @var $this ActiveRecord */
@@ -271,7 +283,7 @@ trait RelationTrait
                                 $array[$key] = "$key = '{$this->$value}'";
                             }
                         }
-                        $error = !$this->{$data['name']}[0]->deleteAll(implode(' AND ', $array));
+                        $error = !$this->deleteRecords($this->{$data['name']}[0], implode(' AND ', $array));
                     }
                 }
             }
