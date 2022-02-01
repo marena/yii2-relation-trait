@@ -338,7 +338,7 @@ trait RelationTrait
             if ($method->name === 'deleteWithRelated') {
                 continue;
             }
-            if (strpos($method->name, 'get') === false) {
+            if (substr($method->name, 0, 3) !== 'get') {
                 continue;
             }
             try {
