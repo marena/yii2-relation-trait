@@ -9,7 +9,7 @@
 
 namespace mootensai\relation;
 
-use yii\db\ActiveQuery;
+use \yii\db\ActiveQuery;
 use \yii\db\ActiveRecord;
 use \yii\db\Exception;
 use \yii\helpers\Inflector;
@@ -28,13 +28,14 @@ trait RelationTrait
                     /* @var $relObj ActiveRecord */
                     $isHasMany = is_array($value) && is_array(current($value));
                     $relName = ($isHasMany) ? lcfirst(Inflector::pluralize($key)) : lcfirst($key);
+
+                    if (!in_array($relName, $allowedRelations))
+                        continue;
+                    
                     $AQ = $this->getRelation($relName);
                     $relModelClass = $AQ->modelClass;
                     $relPKAttr = $relModelClass::primaryKey();
                     $isManyMany = count($relPKAttr) > 1;
-
-                    if (!in_array($relName, $allowedRelations))
-                        continue;
 
                     if ($isManyMany) {
                         $container = [];
