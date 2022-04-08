@@ -330,6 +330,9 @@ trait RelationTrait
             if ($method->name === 'getRelationData') {
                 continue;
             }
+            if ($method->name === 'getMetaAttribute') {
+                continue;
+            }
             if ($method->name === 'getAttributesWithRelatedAsPost') {
                 continue;
             }
