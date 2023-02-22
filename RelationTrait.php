@@ -9,6 +9,7 @@
 
 namespace mootensai\relation;
 
+use yii\base\UnknownMethodException;
 use \yii\db\ActiveQuery;
 use \yii\db\ActiveRecord;
 use \yii\db\Exception;
@@ -347,7 +348,7 @@ trait RelationTrait
             }
             
             try {
-
+                
                 $rel = call_user_func(array($this, $method->name));
                 if ($rel instanceof \yii\db\ActiveQuery) {
                     $name = lcfirst(str_replace('get', '', $method->name));
@@ -358,7 +359,9 @@ trait RelationTrait
                     $stack[$name]['link'] = $rel->link;
                     $stack[$name]['via'] = $rel->via;
                 }
-            } catch (Throwable $exc) {
+            } catch (\yii\base\ErrorException $exc) {
+                //if method name can't be called,
+            } catch (UnknownMethodException $exc) {
                 //if method name can't be called,
             }
         }
