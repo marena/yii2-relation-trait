@@ -345,7 +345,9 @@ trait RelationTrait
             if (substr($method->name, 0, 3) !== 'get') {
                 continue;
             }
+            
             try {
+
                 $rel = call_user_func(array($this, $method->name));
                 if ($rel instanceof \yii\db\ActiveQuery) {
                     $name = lcfirst(str_replace('get', '', $method->name));
@@ -356,7 +358,7 @@ trait RelationTrait
                     $stack[$name]['link'] = $rel->link;
                     $stack[$name]['via'] = $rel->via;
                 }
-            } catch (\yii\base\ErrorException $exc) {
+            } catch (Throwable $exc) {
                 //if method name can't be called,
             }
         }
