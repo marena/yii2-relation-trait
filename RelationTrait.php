@@ -363,7 +363,11 @@ trait RelationTrait
                 //if method name can't be called,
             } catch (UnknownMethodException $exc) {
                 //if method name can't be called,
+            } catch (\ArgumentCountError $exc) {
+                //if method name can't be called,
             }
+
+            
         }
         return $stack;
     }
