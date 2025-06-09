@@ -351,8 +351,8 @@ trait RelationTrait
                 
                 $rel = call_user_func(array($this, $method->name));
                 if ($rel instanceof \yii\db\ActiveQuery) {
-                    $name = lcfirst(str_replace('get', '', $method->name, 1));
-                    $stack[$name]['name'] = lcfirst(str_replace('get', '', $method->name, 1));
+                    $name = lcfirst(preg_replace('/get/', '', $method->name, 1));
+                    $stack[$name]['name'] = lcfirst(preg_replace('/get/', '', $method->name, 1));
                     $stack[$name]['method'] = $method->name;
                     $stack[$name]['ismultiple'] = $rel->multiple;
                     $stack[$name]['modelClass'] = $rel->modelClass;
